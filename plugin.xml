@@ -1,0 +1,163 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-mapp-plugin" version="0.0.1" xmlns="http://www.phonegap.com/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>MappCordovaPlugin</name>
+
+    <author>Aleksandar Marinkovic</author>
+
+    <license>MIT</license>
+
+    <preference name="APX_OPEN_URL_INTERNAL" default="yes" />
+
+    <engines>
+        <engine name="cordova-android" version=">=8.0.0"/>
+    </engines>
+
+    <js-module src="www/MappPlugin.js" name="MappPlugin">
+        <clobbers target="MappPlugin" />
+    </js-module>
+
+    <!-- android -->
+    <platform name="android">
+
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="MappPlugin">
+                <param name="android-package" value="com.mapp.cordova.plugin.MappPlugin"/>
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+        </config-file>
+
+        <config-file target="res/values/strings.xml" parent="/resources">
+            <string name="apx_open_url_internal">$APX_OPEN_URL_INTERNAL</string>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <receiver
+                    android:name="com.mapp.cordova.plugin.MappPushListener"
+                    android:enabled="true"
+                    android:exported="false">
+                <intent-filter>
+                    <action android:name="com.appoxee.PUSH_OPENED" />
+                    <action android:name="com.appoxee.PUSH_RECEIVED" />
+                    <action android:name="com.appoxee.PUSH_DISMISSED" />
+                    <action android:name="com.appoxee.BUTTON_CLICKED" />
+
+                    <category android:name="${applicationId}" />
+
+                    <action android:name="android.intent.action.VIEW" />
+
+                    <category android:name="android.intent.category.DEFAULT" />
+                    <category android:name="android.intent.category.BROWSABLE" />
+
+                </intent-filter>
+            </receiver>
+
+            <activity android:name = "com.mapp.cordova.plugin.ActivityListener" android:label = "@string/app_name" android:theme = "@android:style/Theme.NoDisplay" >
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="com.mapp.RICH_PUSH" />
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="com.appoxee.VIEW_CUSTOM_LINKS" />
+                <action android:name="com.appoxee.VIEW_INBOX" />
+                <action android:name="com.appoxee.VIEW_DEEPLINK" />
+
+                <category android:name="${applicationId}" />
+            </activity>
+        </config-file>
+
+        <edit-config file="AndroidManifest.xml" target="/manifest/application" mode="merge">
+            <application android:name="com.mapp.cordova.plugin.MappApp" />
+        </edit-config>
+
+        <edit-config file="AndroidManifest.xml" target="/manifest/application/activity[@android:name='MainActivity']" mode="overwrite">
+            <activity android:name="MainActivity"   android:launchMode="singleInstance" />
+        </edit-config>
+
+
+        <source-file src="src/android/ActivityListener.java" target-dir="src/com/mapp/cordova/plugin/"/>
+        <source-file src="src/android/MappAction.java" target-dir="src/com/mapp/cordova/plugin/"/>
+        <source-file src="src/android/MappApp.java" target-dir="src/com/mapp/cordova/plugin/"/>
+        <source-file src="src/android/MappPlugin.java" target-dir="src/com/mapp/cordova/plugin/"/>
+        <source-file src="src/android/MappPushListener.java" target-dir="src/com/mapp/cordova/plugin/"/>
+        <source-file src="src/android/PushDataListener.java" target-dir="src/com/mapp/cordova/plugin/"/>
+
+
+        <framework
+                custom="true"
+                src="src/android/build-extras.gradle"
+                type="gradleReference"/>
+        <!-- the appoxee .aar library -->
+
+    </platform>
+
+    <!-- ios -->
+    <platform name="ios">
+
+        <config-file target="config.xml" parent="/*">
+            <feature name="MappPlugin">
+                <param name="ios-package" value="MappPlugin" />
+            </feature>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSLocationAlwaysAndWhenInUseUsageDescription">
+            <string>Provide your location to our SDK</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
+            <string>Provide your location to our SDK</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSLocationUsageDescription">
+            <string>Provide your location to our SDK</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
+            <string>Provide your location to our SDK</string>
+        </config-file>
+
+        <!-- Plugin files -->
+        <header-file src="src/ios/MappPlugin.h" />
+        <source-file src="src/ios/MappPlugin.m" />
+        <header-file src="src/ios/LMLogger.h" />
+        <source-file src="src/ios/LMLogger.m" />
+        <header-file src="src/ios/AppDelegate+MappDelegate.h" />
+        <source-file src="src/ios/AppDelegate+MappDelegate.m" />
+        <resource-file src="src/ios/AppoxeeConfig.plist"/>
+
+        <!-- Appoxee framework -->
+        <header-file src="src/ios/AppoxeeSDK.framework/Versions/A/Headers/AppoxeeSDK.h" target-dir="ios"/>
+        <header-file src="src/ios/AppoxeeSDK.framework/Versions/A/Headers/Appoxee.h" target-dir="ios"/>
+        <header-file src="src/ios/AppoxeeSDK.framework/Versions/A/Headers/AppoxeeManager.h" target-dir="ios"/>
+        <header-file src="src/ios/AppoxeeSDK.framework/Versions/A/Headers/APXClientDevice.h" target-dir="ios"/>
+        <header-file src="src/ios/AppoxeeSDK.framework/Versions/A/Headers/APXInterfaceService.h" target-dir="ios"/>
+        <header-file src="src/ios/AppoxeeSDK.framework/Versions/A/Headers/APXPushNotification.h" target-dir="ios"/>
+        <header-file src="src/ios/AppoxeeSDK.framework/Versions/A/Headers/APXPushNotificationAction.h" target-dir="ios"/>
+        <header-file src="src/ios/AppoxeeSDK.framework/Versions/A/Headers/APXPushNotificationActionButton.h" target-dir="ios"/>
+        <header-file src="src/ios/AppoxeeSDK.framework/Versions/A/Headers/APXPushNotificationActionButtonAction.h" target-dir="ios"/>
+        <header-file src="src/ios/AppoxeeSDK.framework/Versions/A/Headers/APXRichMessage.h" target-dir="ios"/>
+        <source-file src="src/ios/AppoxeeSDK.framework/Versions/A/AppoxeeSDK" framework="true"/>
+        <resource-file src="src/ios/AppoxeeSDKResources.bundle"/>
+
+        <!-- Appoxee location framework -->
+        <header-file src="src/ios/AppoxeeLocationServices.framework/Versions/A/Headers/AppoxeeLocationManager.h" target-dir="ios"/>
+        <header-file src="src/ios/AppoxeeLocationServices.framework/Versions/A/Headers/AppoxeeLocationServices.h" target-dir="ios"/>
+        <header-file src="src/ios/AppoxeeLocationServices.framework/Versions/A/Headers/APXLocationServices.h" target-dir="ios"/>
+        <source-file src="src/ios/AppoxeeLocationServices.framework/Versions/A/AppoxeeLocationServices" framework="true"/>
+
+        <!-- Appoxee inapp framework -->
+        <header-file src="src/ios/AppoxeeInapp.framework/Versions/A/Headers/AppoxeeInapp.h" target-dir="ios" />
+        <header-file src="src/ios/AppoxeeInapp.framework/Versions/A/Headers/AppoxeeInappSDK.h" target-dir="ios" />
+        <header-file src="src/ios/AppoxeeInapp.framework/Versions/A/Headers/APXInBoxMessage.h" target-dir="ios" />
+
+        <source-file src="src/ios/AppoxeeInapp.framework/Versions/A/AppoxeeInapp" framework="true" />
+
+        <resource-file src="src/ios/AppoxeeInappResources.bundle" />
+
+        <!-- System frameworks -->
+        <framework src="Foundation.framework" weak="true" />
+        <framework src="UIKit.framework" weak="true" />
+        <framework src="UserNotifications.framework" weak="true" />
+        <framework src="CoreLocation.framework" weak="true" />
+        <framework src="WebKit.framework" weak="true" />
+    </platform>
+</plugin>

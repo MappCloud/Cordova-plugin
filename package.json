@@ -1,0 +1,25 @@
+{
+  "name": "cordova-mapp-plugin",
+  "version": "0.0.1",
+  "description": "",
+  "cordova": {
+    "id": "cordova-mapp-plugin",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.4.0"
+    }
+  ],
+  "author": "Aleksandar Marinkovic",
+  "license": "MIT"
+}
